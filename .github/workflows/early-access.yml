@@ -1,0 +1,107 @@
+name: EarlyAccess
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.vars.outputs.VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+    
+      - name: Version
+        id: vars
+        shell: bash
+        run: |
+          version=$(sed -n 's/version: "\(.*\)",/\1/p' mix.exs | head -n1 | tr -d '[:space:]')
+          echo ::set-output name=VERSION::$(echo "$version")
+
+  build:
+    needs: [ precheck ]
+    name: 'Build ${{ matrix.os }}'
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Elixir toolchain
+        uses: erlef/setup-beam@v1
+        if: ${{ runner.os != 'macOS' }}
+        with:
+          otp-version: '25.0.4'
+          elixir-version: '1.13.4'
+
+      - name: Install Elixir toolchain
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install elixir         
+          
+      - name: Build
+        run: mix escript.build
+          
+      - name: Assemble
+        uses: jreleaser/release-action@v2
+        with:
+          version: early-access
+          arguments: assemble
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: artifacts
+          path: |
+            out/jreleaser/assemble/helloworld/archive/*.zip
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: jreleaser-${{ matrix.os }}
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties
+
+  release:
+    needs: [ precheck, build ]
+    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Release
+        uses: jreleaser/release-action@v2
+        with:
+          version: early-access
+          arguments: release -PartifactsDir=artifacts -PskipArchiveResolver
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties

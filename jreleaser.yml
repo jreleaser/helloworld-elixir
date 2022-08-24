@@ -6,12 +6,13 @@ project:
   name: helloworld
   description: HelloWorld in Elixir
   longDescription: HelloWorld in Elixir
-  website: https://github.com/aalmiray/helloworld-elixir
+  links:
+    homepage: https://github.com/aalmiray/helloworld-elixir
   authors:
     - Andres Almiray
   license: MIT
-  extraProperties:
-    inceptionYear: 2022
+  stereotype: cli
+  inceptionYear: 2022
 
 platform:
   replacements:
