@@ -24,3 +24,6 @@ helloworld-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# JReleaser's output
+/out/

@@ -3,12 +3,9 @@
 This repository shows how to configure link:https://github.com/features/actions[GitHub Actions] and link:https://jreleaser.org/[JReleaser] to:
 
  * compile a helloworld app for the followign targets:
-   ** aarch64-apple-darwin
    ** x86_64-apple-darwin
    ** x86_64-pc-windows-msvc
    ** x86_64-unknown-linux-gnu
- * use cross to compile for aarch64-unknown-linux-gnu
- * use `lipo` to generate an universal binary for apple-darwin
  * assemble zip distributions with JReleaser
  * create rolling early-acces releases with JReleaser on every push to `main` branch
 
