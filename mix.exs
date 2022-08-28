@@ -4,7 +4,7 @@ defmodule Helloworld.MixProject do
   def project do
     [
       app: :helloworld,
-      version: "0.1.0-SNAPSHOT",
+      version: "0.0.0-SNAPSHOT",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       escript: [

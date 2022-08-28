@@ -8,5 +8,3 @@ This repository shows how to configure link:https://github.com/features/actions[
    ** x86_64-unknown-linux-gnu
  * assemble zip distributions with JReleaser
  * create rolling early-acces releases with JReleaser on every push to `main` branch
-
-Inspired by link:https://github.com/aalmiray/helloworld-rustx[].
