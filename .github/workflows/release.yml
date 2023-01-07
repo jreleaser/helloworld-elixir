@@ -50,8 +50,8 @@ jobs:
 
       - name: Commit version
         run: |
-          echo ${{ needs.precheck.outputs.VERSION }} > VERSION
-          git add VERSION
+          sed -i -e "s/^      version\: "\(.*\)"/      version: "${{ github.event.inputs.version }}/g" mix.exs
+          git add mix.exs
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Action"
           git commit -a -m "Releasing version ${{ needs.precheck.outputs.VERSION }}"

@@ -6,6 +6,7 @@ on:
 
 jobs:
   precheck:
+    if: github.repository == 'jreleaser/helloworld-elixir' && startsWith(github.event.head_commit.message, 'Releasing version') != true
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.vars.outputs.VERSION }}
@@ -17,7 +18,8 @@ jobs:
         id: vars
         shell: bash
         run: |
-          echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+          VERSION=$(sed -n 's/^      version\: "\(.*\)",/\1/p' mix.exs | head -n1)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
   build:
     needs: [ precheck ]
