@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -27,8 +27,8 @@ jobs:
         uses: erlef/setup-beam@v1
         if: ${{ runner.os != 'macOS' }}
         with:
-          otp-version: '25.0.4'
-          elixir-version: '1.13.4'
+          otp-version: '27.2'
+          elixir-version: '1.18.1'
 
       - name: Install Elixir toolchain
         if: ${{ runner.os == 'macOS' }}
